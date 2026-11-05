@@ -1,7 +1,5 @@
 # 域名邮件查看器 (Domain Mail Viewer)
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?repository=https://github.com/Wanmeng811/domain-mail-viewer)
-
 一个跑在 **Cloudflare** 上的「只收不能发」网站：你域名下**任意邮箱地址**收到的邮件，
 都会被捕获、存入 D1 数据库，并在一个漂亮的网页里集中查看。
 
@@ -10,11 +8,15 @@
 - 🔐 **登录保护** — Cloudflare Access（Google / GitHub 等一键登录）
 - 🗄️ **存储** — D1 (SQLite)，附件只存元数据（文件名/类型/大小），不存内容
 - 🎨 **界面** — 原生 HTML/CSS/JS 单页，左侧列表 + 右侧阅读窗，支持明暗主题、搜索、XSS 防护
-- 🤖 **全自动部署** — 一条命令搞定 D1 / Access / Worker / 自定义域 / 邮件路由
+- 🤖 **全自动部署** — 一条命令在 Cloudflare 上自动建好 D1 / Access / Worker / 自定义域 / 邮件路由
 
 ---
 
-## 全自动部署（推荐）
+## 一键部署（推荐）
+
+本项目**不走** Cloudflare 的 "Deploy" 按钮——那个按钮只会建 Worker + 前端，建不了本 App 必需的 **D1 数据库 / Access 登录应用 / Email Routing catch-all**（这些依赖它无法自动创建，点了也跑不起来）。
+
+真正的一键就是本地这一行命令，它会用 Cloudflare API 把上面三样 + Worker + 前端**全自动建好**：
 
 ```bash
 cd domain-mail-viewer
@@ -24,14 +26,7 @@ node scripts/deploy.js --domain example.com        # 站点将出现在 mail.exa
 # 想用别的子域： node scripts/deploy.js --domain example.com --subdomain inbox
 ```
 
-> 💡 上面的 **Deploy to Cloudflare** 按钮可一键拉起部署向导，但它只会创建 Worker + 前端。
-> **本项目依赖 D1 / Access / Email Routing**，这几步按钮无法自动完成，仍需在本地跑下面的命令：
->
-> ```bash
-> npm install && wrangler login && node scripts/deploy.js --domain 你的域名
-> ```
->
-> `deploy.js` 会用你的域名**自动完成**以下全部步骤（无需在 CF 后台手动点）：
+`deploy.js` 会用你的域名**自动完成**以下全部步骤（无需在 CF 后台手动点）：
 
 1. 解析 zone / account
 2. 创建（或复用）D1 数据库 `domain-mail-viewer` 并执行迁移
