@@ -1,5 +1,7 @@
 # 域名邮件查看器 (Domain Mail Viewer)
 
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?repository=https://github.com/Wanmeng811/domain-mail-viewer)
+
 一个跑在 **Cloudflare** 上的「只收不能发」网站：你域名下**任意邮箱地址**收到的邮件，
 都会被捕获、存入 D1 数据库，并在一个漂亮的网页里集中查看。
 
@@ -22,7 +24,14 @@ node scripts/deploy.js --domain example.com        # 站点将出现在 mail.exa
 # 想用别的子域： node scripts/deploy.js --domain example.com --subdomain inbox
 ```
 
-`deploy.js` 会用你的域名**自动完成**以下全部步骤（无需在 CF 后台手动点）：
+> 💡 上面的 **Deploy to Cloudflare** 按钮可一键拉起部署向导，但它只会创建 Worker + 前端。
+> **本项目依赖 D1 / Access / Email Routing**，这几步按钮无法自动完成，仍需在本地跑下面的命令：
+>
+> ```bash
+> npm install && wrangler login && node scripts/deploy.js --domain 你的域名
+> ```
+>
+> `deploy.js` 会用你的域名**自动完成**以下全部步骤（无需在 CF 后台手动点）：
 
 1. 解析 zone / account
 2. 创建（或复用）D1 数据库 `domain-mail-viewer` 并执行迁移
