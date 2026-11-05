@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>域名邮件查看器</title>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="stylesheet" href="/styles.css" />
+  <!-- DOMPurify: sanitizes HTML email bodies before display -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">✉</div>
+        <div class="brand-text">
+          <h1>域名邮件查看器</h1>
+          <span class="subtitle">仅接收 · 所有域名邮箱</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span id="count" class="badge-count" title="本页邮件数">0</span>
+        <button id="refresh" class="btn" title="刷新">↻ 刷新</button>
+        <button id="theme" class="btn btn-icon" title="切换主题">🌙</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="list-pane" aria-label="邮件列表">
+        <div class="list-toolbar">
+          <input id="search" class="search" type="search" placeholder="搜索发件人 / 主题…" />
+        </div>
+        <ul id="list" class="mail-list">
+          <li class="empty-state">加载中…</li>
+        </ul>
+        <div class="list-footer">
+          <button id="loadMore" class="btn btn-ghost hidden">加载更多</button>
+        </div>
+      </section>
+
+      <section class="reader-pane" aria-label="邮件内容">
+        <div id="reader" class="reader">
+          <div class="placeholder">
+            <div class="placeholder-icon">📬</div>
+            <p>从左侧选择一封邮件查看内容</p>
+            <p class="hint">所有发往该域名任意邮箱的邮件都会出现在这里</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
