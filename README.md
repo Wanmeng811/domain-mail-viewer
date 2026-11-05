@@ -43,6 +43,48 @@ node scripts/deploy.js --domain example.com        # 站点将出现在 mail.exa
 
 ---
 
+## 为什么不能直接用 Cloudflare 的 "Deploy" 按钮？（及解决方式）
+
+**结论：别点那个按钮，用上面的 `node scripts/deploy.js` 就行。**
+
+### 按钮为什么跑不起来
+Cloudflare 的 "Deploy to Cloudflare" 按钮本质就是执行一句**裸的** `npx wrangler deploy`，
+它**不会解析** `wrangler.toml` 里的 `${D1_DATABASE_ID}` 等占位符。于是日志里会出现：
+
+```
+- DB: domain-mail-viewer (${D1_DATABASE_ID})   ← 占位符原样没被替换
+...
+✘ [ERROR] A request to the Cloudflare API (/accounts/.../workers/scripts/domain-mail-viewer)
+failed: binding DB of type d1 must have a valid `database_id` specified [code: 10021]
+```
+
+而且按钮只会建 Worker + 前端，**不会**自动创建本项目必需的 D1 数据库、Access 登录应用、Email Routing catch-all 规则——
+就算占位符填对了，缺这三样依赖站点照样打不开。
+
+### 解决方式（二选一）
+1. **推荐 —— 用本项目自带的一键脚本**（上面的「一键部署」节）：
+   ```bash
+   npm install
+   wrangler login
+   node scripts/deploy.js --domain example.com
+   ```
+   `deploy.js` 会在部署时通过环境变量**真正把占位符替换成真实值**，
+   并自动建好 D1 / Access / 自定义域 / 邮件路由，所以不会出 `10021` 错误。
+2. **一定要用 `wrangler deploy` 的话**，先手动把占位符落实，再部署：
+   ```bash
+   wrangler d1 create domain-mail-viewer        # 记下 database_id
+   wrangler secret put CF_ACCESS_AUD
+   ```
+   然后在 `wrangler.toml` 里把
+   `database_id = "${D1_DATABASE_ID}"` 改成真实 ID、
+   `CF_ACCESS_AUTH_DOMAIN` / `APP_DOMAIN` 填成真实域名，最后 `wrangler deploy`。
+   （注意：这只能解决 `10021`，D1/Access/路由仍要你按「手动分步部署」节自己建。）
+
+> 一句话：按钮那次失败是「按钮本身不会解析占位符、也不会建依赖」造成的，
+> **跟项目代码无关**；用 `node scripts/deploy.js` 才是正确路径。
+
+---
+
 ## 手动分步部署（可选）
 
 如果你更想在 CF 控制台逐项操作，原来的人工步骤见下；占位符说明见文末清单。
