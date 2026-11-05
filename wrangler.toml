@@ -3,25 +3,25 @@ main = "src/worker.js"
 compatibility_date = "2025-08-01"
 compatibility_flags = ["nodejs_compat"]
 
+# NOTE: this file intentionally keeps placeholders. scripts/deploy.js generates a
+# concrete wrangler.deploy.toml with real values and deploys that (wrangler does
+# NOT substitute ${...} placeholders in this file).
+
 # ---- D1 database (stores received emails) ----
-# database_id is injected at deploy time via the env var D1_DATABASE_ID
-# (see scripts/deploy.js). Leave the placeholder; do not hardcode.
 [[d1_databases]]
 binding = "DB"
 database_name = "domain-mail-viewer"
-database_id = "${D1_DATABASE_ID}"
+database_id = "REPLACE_WITH_D1_ID"
 
 # ---- Static frontend served from ./public ----
 [assets]
 directory = "public"
 not_found_handling = "single-page-application"
 
-# ---- Non-secret variables (generic; injected at deploy time) ----
+# ---- Non-secret variables ----
 [vars]
-# Your Cloudflare Access team domain, e.g. https://team.cloudflareaccess.com
-CF_ACCESS_AUTH_DOMAIN = "${CF_ACCESS_AUTH_DOMAIN}"
-# The hostname this app is served on (display only), e.g. mail.example.com
-APP_DOMAIN = "${APP_DOMAIN}"
+CF_ACCESS_AUTH_DOMAIN = "https://REPLACE.cloudflareaccess.com"
+APP_DOMAIN = "mail.example.com"
 
 # ---- Secrets (set automatically by scripts/deploy.js) ----
 # CF_ACCESS_AUD = the Audience (AUD) value from your Access application.
